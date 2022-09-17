@@ -18,4 +18,17 @@ export class UserService {
       throw new InternalServerErrorException('Something went wrong!');
     }
   }
+
+  async getOneByUsername(username: string) {
+    try {
+      const result = await this.userRepository
+        .createQueryBuilder('user')
+        .where(`user.username = :cond`, { cond: username })
+        .getOne();
+
+      return result;
+    } catch (error) {
+      throw new InternalServerErrorException('Something went wrong!');
+    }
+  }
 }
