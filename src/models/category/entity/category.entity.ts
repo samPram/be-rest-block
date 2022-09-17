@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Article } from 'src/models/article/entity/article.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('category')
 export class CategoryEntity {
@@ -10,4 +11,8 @@ export class CategoryEntity {
 
   @Column('varchar', { length: 144 })
   description: string;
+
+  //   Relation
+  @OneToMany(() => Article, (article) => article.category)
+  articles: Article[];
 }

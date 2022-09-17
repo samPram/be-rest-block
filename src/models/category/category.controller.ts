@@ -30,7 +30,7 @@ export class CategoryController {
   }
 
   @Get()
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.WRITER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   async getCategory(@Query() query: any) {
     const { limit = 10, offset = 0, keyword = '' } = query;
@@ -39,7 +39,7 @@ export class CategoryController {
   }
 
   @Get(':id')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.WRITER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   async getOneCategory(@Param('id', ParseUUIDPipe) id: string) {
     return await this.categoryService.getById(id);

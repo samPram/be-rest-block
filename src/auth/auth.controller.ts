@@ -12,6 +12,10 @@ import {
 import { UserDto } from 'src/models/user/dto/user.dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { RolesGuard } from './role.guard';
+import { Roles } from './role.decorator';
+import { Role } from 'src/models/user/entity/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -56,5 +60,14 @@ export class AuthController {
     );
 
     return { access_token };
+  }
+
+  @Post('logout')
+  @Roles(Role.ADMIN, Role.READER, Role.WRITER)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async logout(@Req() req: any) {
+    const { user } = req;
+
+    return await this.authService.logout(user?.id_user);
   }
 }

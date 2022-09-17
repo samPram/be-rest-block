@@ -1,5 +1,12 @@
 import { Exclude } from 'class-transformer';
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Article } from '../../../models/article/entity/article.entity';
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 export enum Role {
   READER = 'READER',
@@ -28,4 +35,8 @@ export class User {
 
   @Column({ type: 'enum', enum: Role, default: Role.READER, nullable: false })
   role: string;
+
+  // Relation
+  @OneToMany(() => Article, (article) => article.writer)
+  articles: Article[];
 }

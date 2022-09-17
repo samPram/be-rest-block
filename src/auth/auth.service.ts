@@ -178,4 +178,20 @@ export class AuthService {
       throw new InternalServerErrorException('Something went wrong!');
     }
   }
+
+  async logout(id: string) {
+    try {
+      const result = await this.loginActivityRepository.delete({
+        user: {
+          id_user: id,
+        },
+      });
+
+      if (result.affected == 1) {
+        return { message: 'Success' };
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('Something went wrong!');
+    }
+  }
 }

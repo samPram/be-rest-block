@@ -12,6 +12,13 @@ export class CategoryService {
     private categoryRepository: Repository<CategoryEntity>,
   ) {}
 
+  /**
+   * Function for insert new cateogry to database
+   *
+   * @param {CategoryDto} data
+   * @return {*}
+   * @memberof CategoryService
+   */
   async insertCategory(data: CategoryDto) {
     try {
       const new_category = await this.categoryRepository.save(data);
@@ -22,6 +29,13 @@ export class CategoryService {
     }
   }
 
+  /**
+   * Functionto to get specific category by Id
+   *
+   * @param {string} id
+   * @return {*}
+   * @memberof CategoryService
+   */
   async getById(id: string) {
     try {
       const data = await this.categoryRepository.findOneBy({ id_category: id });
@@ -32,6 +46,15 @@ export class CategoryService {
     }
   }
 
+  /**
+   * Function to get All Category with pagination
+   *
+   * @param {number} [limit=10]
+   * @param {number} [offset=0]
+   * @param {string} [keyword='']
+   * @return {*}
+   * @memberof CategoryService
+   */
   async getAll(limit = 10, offset = 0, keyword = '') {
     try {
       const query = this.categoryRepository.createQueryBuilder('category');
@@ -49,12 +72,20 @@ export class CategoryService {
         // .printSql()
         .getManyAndCount();
 
-      return { data: result, total_contest: keyword ? result?.length : total };
+      return { data: result, total: keyword ? result?.length : total };
     } catch (error) {
       throw new InternalServerErrorException('Something went wrong!');
     }
   }
 
+  /**
+   * Update Cateogry by Id
+   *
+   * @param {string} id
+   * @param {UpdateCategoryDto} data
+   * @return {*}
+   * @memberof CategoryService
+   */
   async updateById(id: string, data: UpdateCategoryDto) {
     try {
       const result = await this.categoryRepository.save({
@@ -68,6 +99,13 @@ export class CategoryService {
     }
   }
 
+  /**
+   * Function to delete category by id
+   *
+   * @param {string} id
+   * @return {*}
+   * @memberof CategoryService
+   */
   async deleteById(id: string) {
     try {
       const result = await this.categoryRepository.delete(id);
