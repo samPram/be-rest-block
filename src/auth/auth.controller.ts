@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Get,
   HttpCode,
   Post,
   Req,
@@ -39,6 +40,21 @@ export class AuthController {
       'refresh_token',
     );
 
+    await this.authService.setLoginActivity(refresh_token, user?.id_user);
+
     return { user, access_token, refresh_token };
+  }
+
+  @UseGuards(AuthGuard('jwt-refresh'))
+  @Get('refresh')
+  async getRefreshToken(@Req() req: any) {
+    const { user } = req;
+
+    const access_token = this.authService.getToken(
+      user?.id_user,
+      'access_token',
+    );
+
+    return { access_token };
   }
 }

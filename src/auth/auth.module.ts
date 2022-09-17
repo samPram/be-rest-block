@@ -4,11 +4,18 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { LoginActivity } from './entity/login-activity.entity';
+import { JwtRefreshStrategy } from './jwt-refreht.strategy';
 
 @Module({
-  imports: [UserModule, JwtModule.register({})],
+  imports: [
+    TypeOrmModule.forFeature([LoginActivity]),
+    UserModule,
+    JwtModule.register({}),
+  ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy],
+  providers: [AuthService, LocalStrategy, JwtRefreshStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

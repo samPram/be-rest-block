@@ -2,6 +2,7 @@ import {
   BadRequestException,
   HttpException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { UserService } from 'src/models/user/user.service';
@@ -9,6 +10,9 @@ import * as bcrypt from 'bcrypt';
 import { UserDto } from 'src/models/user/dto/user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { LoginActivity } from './entity/login-activity.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +20,8 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @InjectRepository(LoginActivity)
+    private loginActivityRepository: Repository<LoginActivity>,
   ) {}
 
   /**
@@ -89,5 +95,56 @@ export class AuthService {
       };
     }
     return this.jwtService.sign({ sub: id }, config);
+  }
+
+  async setLoginActivity(refresh_token: string, user_id: string) {
+    try {
+      const payload = {
+        expired: new Date(new Date().setDate(new Date().getDate() + 7)),
+      };
+
+      const activity = await this.loginActivityRepository.findOne({
+        where: {
+          user: {
+            id_user: user_id,
+          },
+        },
+      });
+
+      const hash_refresh = await bcrypt.hash(refresh_token, 10);
+
+      if (activity) {
+        payload['id_activity'] = activity.id_activity;
+      }
+
+      await this.loginActivityRepository.save({
+        ...payload,
+        refresh_token: hash_refresh,
+        user: { id_user: user_id },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException('Something went wrong!');
+    }
+  }
+
+  async matchingRefreshToken(refresh_token: string, user_id: string) {
+    try {
+      const data = await this.loginActivityRepository.findOne({
+        relations: ['user'],
+        where: {
+          user: { id_user: user_id },
+        },
+      });
+      const isRefreshTokenMatch = await bcrypt.compare(
+        refresh_token,
+        data?.refresh_token,
+      );
+
+      if (isRefreshTokenMatch) {
+        return data;
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('Something went wrong!');
+    }
   }
 }
