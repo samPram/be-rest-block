@@ -22,8 +22,8 @@ export class User {
   @Column('varchar', { length: 12, nullable: false, unique: true })
   username: string;
 
-  @Exclude()
   @Column('varchar', { length: 144, nullable: false })
+  @Exclude()
   password: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.READER, nullable: false })

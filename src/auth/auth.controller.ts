@@ -1,18 +1,44 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  HttpCode,
+  Post,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UserDto } from 'src/models/user/dto/user.dto';
 import { AuthService } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post('signup')
   async postSignup(@Body() data: UserDto) {
     return await this.authService.signup(data);
   }
 
+  @UseGuards(AuthGuard('local'))
+  @HttpCode(200)
   @Post('signin')
-  async postSignin(@Body() data: any) {
-    return await this.authService.signin(data);
+  async postSignin(@Req() request: any) {
+    const { user } = request;
+    console.log(user);
+
+    const access_token = this.authService.getToken(
+      user?.id_user,
+      'access_token',
+    );
+
+    const refresh_token = this.authService.getToken(
+      user?.id_user,
+      'refresh_token',
+    );
+
+    return { user, access_token, refresh_token };
   }
 }
