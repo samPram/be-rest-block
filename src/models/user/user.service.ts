@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entity/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -65,10 +66,29 @@ export class UserService {
 
   async updateOneById(id: string, data: any) {
     try {
-      const update = await this.userRepository.update(id, data);
+      const { password = '', ...other } = data;
 
-      return update;
+      if (password) {
+        const hash_password = await bcrypt.hash(password, 10);
+        other['password'] = hash_password;
+      }
+
+      const update = await this.userRepository
+        .createQueryBuilder()
+        .update({
+          ...other,
+        })
+        .where({
+          id_user: id,
+        })
+        .returning('*')
+        .execute();
+
+      delete update.raw[0]?.password;
+
+      return update.raw[0];
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException('Something went wrong!');
     }
   }
