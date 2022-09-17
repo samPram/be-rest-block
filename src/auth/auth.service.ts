@@ -58,6 +58,14 @@ export class AuthService {
     }
   }
 
+  /**
+   * Function to sign in logic
+   *
+   * @param {string} username
+   * @param {string} password
+   * @return {*}
+   * @memberof AuthService
+   */
   async signin(username: string, password: string) {
     try {
       const user = await this.userService.getOneByUsername(username);
@@ -78,6 +86,14 @@ export class AuthService {
     }
   }
 
+  /**
+   * Function to generate access and refresh token
+   *
+   * @param {string} id
+   * @param {string} type
+   * @return {*}
+   * @memberof AuthService
+   */
   getToken(id: string, type: string) {
     let config;
 
@@ -97,6 +113,13 @@ export class AuthService {
     return this.jwtService.sign({ sub: id }, config);
   }
 
+  /**
+   * Function to set activity login within record refresh token
+   *
+   * @param {string} refresh_token
+   * @param {string} user_id
+   * @memberof AuthService
+   */
   async setLoginActivity(refresh_token: string, user_id: string) {
     try {
       const payload = {
@@ -127,6 +150,14 @@ export class AuthService {
     }
   }
 
+  /**
+   * Function to check match refresh token to generate new access token
+   *
+   * @param {string} refresh_token
+   * @param {string} user_id
+   * @return {*}
+   * @memberof AuthService
+   */
   async matchingRefreshToken(refresh_token: string, user_id: string) {
     try {
       const data = await this.loginActivityRepository.findOne({
