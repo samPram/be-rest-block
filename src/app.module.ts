@@ -7,8 +7,6 @@ import { UserModule } from './models/user/user.module';
 import { ArticleModule } from './models/article/article.module';
 import { PostgresProviderModule } from './providers/databases/postgres/provider.module';
 import { CategoryModule } from './models/category/category.module';
-import { CommentModule } from './models/comment/comment.module';
-import { LikedModule } from './models/liked/liked.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -20,8 +18,6 @@ import { AuthModule } from './auth/auth.module';
     UserModule,
     ArticleModule,
     CategoryModule,
-    CommentModule,
-    LikedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
